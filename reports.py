@@ -1,6 +1,7 @@
 """Weekly reporting — log activity and generate weekly summaries."""
 from datetime import date, timedelta
 import db
+import opportunity_hunter as oh
 
 
 def menu():
@@ -99,6 +100,13 @@ def _this_week_report():
         print(f"\n  UPCOMING DEADLINES")
         for opp in upcoming:
             print(f"    {opp['deadline']}  {opp['title']}")
+
+    top = oh.get_top_prospects_summary(limit=5)
+    if top:
+        print(f"\n  TOP PROSPECTS (Opportunity Hunter)")
+        for p in top:
+            queries = " [open queries]" if p['accepts_queries'] else ""
+            print(f"    [{p['score']:3d}] {oh.TYPE_DISPLAY[p['type']]:<25} {p['name']}{queries}")
 
     input("\n  Press Enter to continue...")
 

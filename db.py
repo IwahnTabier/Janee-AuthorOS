@@ -3,7 +3,8 @@ import sqlite3
 import os
 from datetime import date, timedelta
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "author_os.db")
+_default_db = os.path.join(os.path.dirname(os.path.abspath(__file__)), "author_os.db")
+DB_PATH = os.environ.get('AUTHOR_OS_DB', _default_db)
 
 
 def connect():
@@ -79,6 +80,40 @@ def init():
                 notes              TEXT,
                 created_at         TEXT DEFAULT (date('now'))
             );
+
+            CREATE TABLE IF NOT EXISTS prospects (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                type                TEXT NOT NULL
+                                    CHECK(type IN ('podcast','agent','publisher','festival','reviewer','blogger')),
+                name                TEXT NOT NULL,
+                url                 TEXT,
+                contact_name        TEXT,
+                contact_email       TEXT,
+                status              TEXT NOT NULL DEFAULT 'new'
+                                    CHECK(status IN ('new','contacted','responded','accepted','rejected','archived')),
+                notes               TEXT,
+
+                -- Scoring: five criteria rated 0-4 each. Score = sum * 5 (max 100).
+                audience_relevance  INTEGER NOT NULL DEFAULT 0 CHECK(audience_relevance  BETWEEN 0 AND 4),
+                genre_fit           INTEGER NOT NULL DEFAULT 0 CHECK(genre_fit           BETWEEN 0 AND 4),
+                accessibility       INTEGER NOT NULL DEFAULT 0 CHECK(accessibility       BETWEEN 0 AND 4),
+                potential_reach     INTEGER NOT NULL DEFAULT 0 CHECK(potential_reach     BETWEEN 0 AND 4),
+                publishing_value    INTEGER NOT NULL DEFAULT 0 CHECK(publishing_value    BETWEEN 0 AND 4),
+                score               INTEGER NOT NULL DEFAULT 0,
+
+                -- Type-specific optional fields
+                genre_focus         TEXT,
+                accepts_queries     INTEGER,
+                submission_deadline TEXT,
+
+                discovered_date     TEXT NOT NULL DEFAULT (date('now')),
+                created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at          TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_prospects_type   ON prospects(type);
+            CREATE INDEX IF NOT EXISTS idx_prospects_status ON prospects(status);
+            CREATE INDEX IF NOT EXISTS idx_prospects_score  ON prospects(score DESC);
         """)
 
         if conn.execute("SELECT COUNT(*) FROM books").fetchone()[0] == 0:

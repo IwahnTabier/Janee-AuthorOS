@@ -9,6 +9,7 @@ import agents
 import opportunities
 import calendar_mod
 import reports
+import opportunity_hunter
 
 
 def main_menu():
@@ -24,6 +25,7 @@ def main_menu():
         print("   3. Content Calendar")
         print("   4. Weekly Report")
         print("   5. My Books")
+        print("   6. Opportunity Hunter")
         print("   0. Exit")
         print("=" * 50)
         choice = input("\n   Choice: ").strip()
@@ -38,6 +40,8 @@ def main_menu():
             reports.menu()
         elif choice == "5":
             _books()
+        elif choice == "6":
+            opportunity_hunter.menu()
         elif choice == "0":
             print("\n   Until next time, Janee.\n")
             sys.exit(0)
