@@ -2,10 +2,10 @@
 
 ## Basic Information
 
-- **Name:**
+- **Name:** Janee' Butterfield
 - **Genre:**
 - **Location:**
-- **Website:**
+- **Website:** https://www.janeebutterfield.com
 - **Email:**
 
 ---
